@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KDS | Mama Mia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-100 p-4">
+    <h1 class="text-2xl font-bold mb-4">Kitchen Display</h1>
+    <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    <script>
+        async function fetchOrders(){
+            const r=await fetch('/api/orders');
+            const data=await r.json();
+            const cont=document.getElementById('kds-orders');
+            cont.innerHTML=data.map(o=>`
+                <div class="bg-white p-4 rounded shadow">
+                    <div class="flex justify-between">
+                        <h2 class="font-bold">Table #${o.table}</h2>
+                        <span class="text-xs bg-gray-200 px-2 rounded">${o.status}</span>
+                    </div>
+                    <ul class="text-sm">
+                        ${o.items.map(i=>`<li>${i.name} x${i.qty}</li>`).join('')}
+                    </ul>
+                    <p class="font-bold mt-2">Total: ₹${o.total}</p>
+                    <button onclick="updStatus('${o.id}')" class="mt-2 text-xs bg-green-500 text-white p-1 rounded">Done</button>
+                </div>
+            `).join('');
+        }
+        async function updStatus(id){
+            await fetch(`/api/orders/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Completed'})});
+            fetchOrders();
+        }
+        setInterval(fetchOrders,5000);
+        fetchOrders();
+    </script>
+</body>
+</html>
