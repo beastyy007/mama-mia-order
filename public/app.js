@@ -51,9 +51,20 @@ window.placeOrder = async function(type) {
     if (!t) { alert('Please select a table number first!'); openTbl(); return; }
     if (c.length === 0) { alert('Your cart is empty!'); return; }
 
-    const name = document.getElementById('cust-name')?.value.trim() || 'Guest';
-    const phone = document.getElementById('cust-phone')?.value.trim() || '';
+    const name = document.getElementById('cust-name')?.value.trim();
+    const phone = document.getElementById('cust-phone')?.value.trim();
     const notes = document.getElementById('cust-notes')?.value.trim() || '';
+
+    if (!name) {
+        alert('Please enter your name to place the order.');
+        document.getElementById('cust-name')?.focus();
+        return;
+    }
+    if (!phone || phone.length < 10) {
+        alert('Please enter a valid 10-digit phone number.');
+        document.getElementById('cust-phone')?.focus();
+        return;
+    }
     const sub = c.reduce((s, x) => s + (x.price * x.qty), 0);
     const tax = Math.round(sub * 0.05);
     const total = sub + tax;
