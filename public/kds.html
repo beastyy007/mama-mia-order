@@ -2,30 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KDS | Mama Mia</title>
+    <title>KDS | Mama Mia Artisan Kitchen</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="bg-stone-100 p-4">
-    <h1 class="text-2xl font-bold mb-4">Kitchen Display</h1>
-    <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+<body class="bg-stone-900 text-stone-100 min-h-screen p-6">
+    <header class="flex justify-between items-center mb-6 border-b border-stone-800 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold font-serif text-amber-500">Mama Mia Kitchen Display System (KDS)</h1>
+            <p class="text-xs text-stone-400">Live incoming orders from tables</p>
+        </div>
+        <button onclick="fetchOrders()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-rotate"></i> Refresh
+        </button>
+    </header>
+
+    <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
     <script>
         async function fetchOrders(){
-            const r=await fetch('/api/orders');
-            const data=await r.json();
-            const cont=document.getElementById('kds-orders');
-            cont.innerHTML=data.map(o=>`
-                <div class="bg-white p-4 rounded shadow">
-                    <div class="flex justify-between">
-                        <h2 class="font-bold">Table #${o.table}</h2>
-                        <span class="text-xs bg-gray-200 px-2 rounded">${o.status}</span>
+            try {
+                const r = await fetch('/api/orders');
+                const data = await r.json();
+                const cont = document.getElementById('kds-orders');
+                if(!data || data.length === 0) {
+                    cont.innerHTML = `<div class="col-span-full text-center py-12 text-stone-500"><i class="fa-solid fa-utensils text-4xl mb-2"></i><p>No active orders right now.</p></div>`;
+                    return;
+                }
+                cont.innerHTML = data.map(o=>`
+                    <div class="bg-stone-800 border ${o.status === 'Completed' ? 'border-green-600/50 opacity-60' : 'border-amber-500/50'} rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="bg-amber-500 text-stone-950 font-bold px-3 py-1 rounded-full text-xs">Table #${o.table}</span>
+                                <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${o.status === 'Completed' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-300'}">${o.status || 'Pending'}</span>
+                            </div>
+                            
+                            ${o.customerName || o.customerPhone ? `
+                                <div class="bg-stone-900/60 p-2.5 rounded-xl mb-3 text-xs text-stone-300 border border-stone-700">
+                                    <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> ${o.customerName || 'Guest'}</p>
+                                    ${o.customerPhone ? `<p class="text-stone-400 mt-0.5"><i class="fa-solid fa-phone mr-1"></i> ${o.customerPhone}</p>` : ''}
+                                </div>
+                            ` : ''}
+
+                            ${o.notes ? `
+                                <div class="bg-amber-950/40 border border-amber-800/50 p-2.5 rounded-xl mb-3 text-xs text-amber-200">
+                                    <p class="font-bold mb-0.5"><i class="fa-solid fa-note-sticky mr-1"></i> Note:</p>
+                                    <p>${o.notes}</p>
+                                </div>
+                            ` : ''}
+
+                            <div class="border-t border-stone-700 pt-3 mb-3">
+                                <p class="text-xs font-semibold text-stone-400 mb-2">Order Items:</p>
+                                <ul class="space-y-1.5 text-sm">
+                                    ${o.items.map(i=>`<li class="flex justify-between items-center bg-stone-900/40 px-2.5 py-1.5 rounded-lg"><span class="font-medium">${i.name}</span> <span class="font-bold text-amber-400">x${i.qty}</span></li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-stone-700 flex justify-between items-center mt-4">
+                            <span class="text-sm font-bold text-stone-300">Total: <span class="text-amber-400">₹${o.total}</span></span>
+                            ${o.status !== 'Completed' ? `
+                                <button onclick="updStatus('${o.id}')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
+                                    <i class="fa-solid fa-check"></i> Mark Done
+                                </button>
+                            ` : `
+                                <span class="text-xs text-green-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Completed</span>
+                            `}
+                        </div>
                     </div>
-                    <ul class="text-sm">
-                        ${o.items.map(i=>`<li>${i.name} x${i.qty}</li>`).join('')}
-                    </ul>
-                    <p class="font-bold mt-2">Total: ₹${o.total}</p>
-                    <button onclick="updStatus('${o.id}')" class="mt-2 text-xs bg-green-500 text-white p-1 rounded">Done</button>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
         }
         async function updStatus(id){
             await fetch(`/api/orders/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Completed'})});
