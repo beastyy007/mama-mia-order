@@ -83,8 +83,17 @@
             // Send WhatsApp notification
             if (order && order.customerPhone) {
                 const phone = order.customerPhone.replace(/[^0-9]/g, ''); // Ensure only digits
-                const msg = `Hi ${order.customerName || 'Customer'}, your order for Table #${order.table} at Mama Mia Artisan Kitchen is ready!`;
-                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                
+                let msg = `*🍕 Order Ready - Mama Mia Artisan Kitchen*%0A%0A`;
+                msg += `Hi *${order.customerName || 'Customer'}*, your order for *Table #${order.table}* is ready!%0A%0A`;
+                msg += `*Your Order:*%0A`;
+                order.items.forEach(i => {
+                    msg += `• ${i.name} x${i.qty}%0A`;
+                });
+                msg += `%0A*Total:* ₹${order.total}%0A%0A`;
+                msg += `_Please visit the counter to pick up your order. Self-service is in effect. Thank you for dining with us!_`;
+                
+                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
             }
 
             await fetch(`/api/orders/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Completed'})});
