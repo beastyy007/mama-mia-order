@@ -20,10 +20,12 @@
     <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
     <script>
+        let currentOrders = [];
         async function fetchOrders(){
             try {
                 const r = await fetch('/api/orders');
                 const data = await r.json();
+                currentOrders = data; // Store orders globally
                 const cont = document.getElementById('kds-orders');
                 if(!data || data.length === 0) {
                     cont.innerHTML = `<div class="col-span-full text-center py-12 text-stone-500"><i class="fa-solid fa-utensils text-4xl mb-2"></i><p>No active orders right now.</p></div>`;
@@ -76,6 +78,15 @@
             }
         }
         async function updStatus(id){
+            const order = currentOrders.find(o => o.id === id);
+            
+            // Send WhatsApp notification
+            if (order && order.customerPhone) {
+                const phone = order.customerPhone.replace(/[^0-9]/g, ''); // Ensure only digits
+                const msg = `Hi ${order.customerName || 'Customer'}, your order for Table #${order.table} at Mama Mia Artisan Kitchen is ready!`;
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
             await fetch(`/api/orders/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Completed'})});
             fetchOrders();
         }
