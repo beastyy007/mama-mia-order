@@ -54,9 +54,17 @@
                             ` : ''}
 
                             <div class="border-t border-stone-700 pt-3 mb-3">
-                                <p class="text-xs font-semibold text-stone-400 mb-2">Order Items:</p>
+                                <p class="text-xs font-semibold text-stone-400 mb-2">Order Items (Check ready items):</p>
                                 <ul class="space-y-1.5 text-sm">
-                                    ${o.items.map(i=>`<li class="flex justify-between items-center bg-stone-900/40 px-2.5 py-1.5 rounded-lg"><span class="font-medium">${i.name}</span> <span class="font-bold text-amber-400">x${i.qty}</span></li>`).join('')}
+                                    ${o.items.map((i, idx)=>`
+                                        <li class="flex justify-between items-center bg-stone-900/40 px-2.5 py-1.5 rounded-lg">
+                                            <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                                                <input type="checkbox" class="item-chk-${o.id} accent-amber-500 w-4 h-4 rounded cursor-pointer" checked>
+                                                <span class="font-medium text-stone-200">${i.name}</span>
+                                            </label>
+                                            <span class="font-bold text-amber-400 ml-2">x${i.qty}</span>
+                                        </li>
+                                    `).join('')}
                                 </ul>
                             </div>
                         </div>
@@ -65,7 +73,7 @@
                             <span class="text-sm font-bold text-stone-300">Total: <span class="text-amber-400">₹${o.total}</span></span>
                             ${o.status !== 'Completed' ? `
                                 <button onclick="updStatus('${o.id}')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
-                                    <i class="fa-solid fa-check"></i> Mark Done
+                                    <i class="fa-solid fa-whatsapp"></i> Notify Ready (Selected)
                                 </button>
                             ` : `
                                 <span class="text-xs text-green-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Completed</span>
@@ -79,24 +87,43 @@
         }
         async function updStatus(id){
             const order = currentOrders.find(o => o.id === id);
-            
-            // Send WhatsApp notification
-            if (order && order.customerPhone) {
-                const phone = order.customerPhone.replace(/[^0-9]/g, ''); // Ensure only digits
-                
-                let msg = `*🍕 Order Ready - Mama Mia Artisan Kitchen*%0A%0A`;
-                msg += `Hi *${order.customerName || 'Customer'}*, your order for *Table #${order.table}* is ready!%0A%0A`;
-                msg += `*Your Order:*%0A`;
-                order.items.forEach(i => {
+            if (!order) return;
+
+            const checkboxes = document.querySelectorAll(`.item-chk-${id}`);
+            const readyItems = [];
+
+            checkboxes.forEach((chk, idx) => {
+                if (chk.checked) {
+                    readyItems.push(order.items[idx]);
+                }
+            });
+
+            if (readyItems.length === 0) {
+                alert('Please check at least one ready item to notify the customer.');
+                return;
+            }
+
+            // Send WhatsApp notification for checked items
+            if (order.customerPhone) {
+                const phone = order.customerPhone.replace(/[^0-9]/g, '');
+                let msg = `*🍕 Item(s) Ready - Mama Mia Artisan Kitchen*%0A%0A`;
+                msg += `Hi *${order.customerName || 'Customer'}*, good news! The following item(s) from your order for *Table #${order.table}* are now ready at the counter:%0A%0A`;
+                readyItems.forEach(i => {
                     msg += `• ${i.name} x${i.qty}%0A`;
                 });
-                msg += `%0A*Total:* ₹${order.total}%0A%0A`;
-                msg += `_Please visit the counter to pick up your order. Self-service is in effect. Thank you for dining with us!_`;
-                
+                msg += `%0A_Please collect your items from the counter (Self-Service). Thank you!_`;
+
                 window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
             }
 
-            await fetch(`/api/orders/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Completed'})});
+            const allChecked = readyItems.length === order.items.length;
+            const newStatus = allChecked ? 'Completed' : 'Preparing (Partial)';
+
+            await fetch(`/api/orders/${id}/status`,{
+                method:'PATCH',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({status: newStatus})
+            });
             fetchOrders();
         }
         setInterval(fetchOrders,5000);
