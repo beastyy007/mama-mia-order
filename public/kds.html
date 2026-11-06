@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body class="bg-stone-900 text-stone-100 min-h-screen p-6">
+    <div id="kds-login" class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950 p-6">
+        <form onsubmit="unlockKds(event)" class="w-full max-w-sm rounded-2xl border border-stone-700 bg-stone-900 p-6 text-center shadow-2xl">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 text-2xl text-stone-950">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h1 class="mb-1 text-xl font-bold text-amber-500">KDS Access</h1>
+            <p class="mb-5 text-sm text-stone-400">Enter the kitchen password to continue.</p>
+            <input id="kds-password" type="password" autocomplete="current-password" required autofocus
+                class="mb-3 w-full rounded-xl border border-stone-700 bg-stone-800 px-4 py-3 text-center text-white outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30"
+                placeholder="Password">
+            <p id="kds-login-error" class="mb-3 hidden text-xs text-red-400">Incorrect password. Try again.</p>
+            <button type="submit" class="w-full rounded-xl bg-amber-600 px-4 py-3 font-bold text-stone-950 transition hover:bg-amber-500">Unlock KDS</button>
+        </form>
+    </div>
+
+    <div id="kds-app" class="hidden">
     <header class="flex justify-between items-center mb-6 border-b border-stone-800 pb-4">
         <div>
             <h1 class="text-2xl font-bold font-serif text-amber-500">Mama Mia Kitchen Display System (KDS)</h1>
@@ -18,9 +34,28 @@
     </header>
 
     <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
 
     <script>
+        const KDS_PASSWORD = 'madhuu';
         let currentOrders = [];
+
+        function unlockKds(event) {
+            event.preventDefault();
+            const input = document.getElementById('kds-password');
+            const error = document.getElementById('kds-login-error');
+            if (input.value !== KDS_PASSWORD) {
+                error.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+                return;
+            }
+            document.getElementById('kds-login').classList.add('hidden');
+            document.getElementById('kds-app').classList.remove('hidden');
+            fetchOrders();
+            setInterval(fetchOrders, 60000);
+        }
+
         async function fetchOrders(){
             try {
                 const r = await fetch('/api/orders');
@@ -38,7 +73,7 @@
                                 <span class="bg-amber-500 text-stone-950 font-bold px-3 py-1 rounded-full text-xs">Table #${o.table}</span>
                                 <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${o.status === 'Completed' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-300'}">${o.status || 'Pending'}</span>
                             </div>
-                            
+
                             ${o.customerName || o.customerPhone ? `
                                 <div class="bg-stone-900/60 p-2.5 rounded-xl mb-3 text-xs text-stone-300 border border-stone-700">
                                     <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> ${o.customerName || 'Guest'}</p>
@@ -126,8 +161,6 @@
             });
             fetchOrders();
         }
-        setInterval(fetchOrders,60000);
-        fetchOrders();
     </script>
 </body>
 </html>
