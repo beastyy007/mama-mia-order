@@ -1,74 +1,50 @@
 export const menuData = [
-  {
-    category: "PASTA",
-    items: [
-      { name: "Creamy Mushroom Alfredo", price: 229, description: "Rich, creamy mushroom sauce with Fettuccine pasta." },
-      { name: "Aglio Olio Spaghetti", price: 229, description: "Classic garlic, olive oil, and chili flakes spaghetti." },
-      { name: "Pesto Spaghetti", price: 229, description: "Fresh basil pesto tossed with Spaghetti." },
-      { name: "Classic Pomodoro Spaghetti", price: 229, description: "Simple and delicious tomato basil sauce." },
-      { name: "Spinach & Cheese Ravioli", price: 259, description: "Stuffed ravioli with spinach and artisan cheese." },
-      { name: "Pesto Paneer Ravioli", price: 259, description: "Stuffed with paneer and savory pesto." },
-      { name: "Cheese Corn Jalapeños Ravioli", price: 259, description: "Loaded with cheese, corn, and spicy jalapeños." },
-      { name: "Roasted Garlic Parmesan Ravioli", price: 259, description: "Infused with roasted garlic and parmesan." },
-      { name: "Forest Mushroom Ravioli", price: 259, description: "Earthy mushroom filling in delicate ravioli." },
-      { name: "Pesto Gnocchi", price: 249, description: "Potato dumplings tossed in rich pesto." },
-      { name: "Pomodoro Gnocchi", price: 249, description: "Potato dumplings in vibrant tomato pomodoro sauce." }
-    ]
-  },
-  {
-    category: "PIZZA",
-    items: [
-      { name: "Make Your Own Pizza (10\")", price: 369, description: "Custom crust, sauce, toppings & drizzles." },
-      { name: "Margherita Pizza", price: 399, description: "Classic fresh mozzarella, basil, and tomato sauce." },
-      { name: "Pesto Pizza", price: 419, description: "Basil pesto base with assorted cheeses and veggies." },
-      { name: "Garden Harvest Pizza", price: 419, description: "Loaded with fresh farm vegetables." },
-      { name: "Truffle Wild Mushroom Pizza", price: 449, description: "Wild mushrooms with delicate truffle oil drizzle." },
-      { name: "Roasted Veggies Pesto Pizza", price: 439, description: "Roasted vegetables over aromatic pesto base." },
-      { name: "Spicy Paneer Arrabbiata Pizza", price: 449, description: "Fiery arrabbiata sauce with spiced paneer cubes." },
-      { name: "The Tikka Affair Pizza", price: 449, description: "Desi-style paneer tikka toppings and spices." },
-      { name: "Chilli Bazaar Pizza", price: 439, description: "Extremely flavorful spicy fusion pizza." }
-    ]
-  },
-  {
-    category: "BREADS",
-    items: [
-      { name: "Classic Garlic Bread", price: 169, description: "Crispy baguette baked with garlic herb butter." },
-      { name: "Tandoori Paneer Garlic Bread", price: 189, description: "Garlic bread topped with tandoori paneer chunks." },
-      { name: "Pesto Bruschetta", price: 209, description: "Toasted bread topped with tomatoes and pesto." }
-    ]
-  },
-  {
-    category: "DESSERT (Cheesecake & Tiramisu)",
-    items: [
-      { name: "New York Style Cheesecake", price: 189, description: "Smooth, rich classic New York cheesecake." },
-      { name: "Biscoff Cheesecake", price: 199, description: "Creamy cheesecake with Lotus Biscoff spread." },
-      { name: "Blueberry Cheesecake", price: 189, description: "Classic cheesecake topped with sweet blueberry compote." },
-      { name: "Belgian Chocolate Cheesecake", price: 199, description: "Rich chocolate cheesecake using Belgian cocoa." },
-      { name: "Key Lime Cheesecake", price: 189, description: "Tangy and refreshing citrus cheesecake." },
-      { name: "Classic Tiramisu", price: 249, description: "Traditional coffee-infused Italian dessert." },
-      { name: "Biscoff Tiramisu", price: 269, description: "Tiramisu twisted with Biscoff flavor." },
-      { name: "Strawberry Tiramisu", price: 259, description: "Fruit-infused strawberry tiramisu." }
-    ]
-  },
-  {
-    category: "COOKIE",
-    items: [
-      { name: "Chocolate Chips Cookie Tub", price: 79, description: "Soft, chewy chocolate chip cookies in a tub." },
-      { name: "Red Velvet Cookie Tub", price: 89, description: "Rich red velvet cookies with white chocolate." },
-      { name: "Double Chocolate Cookie Tub", price: 89, description: "Fudgy double chocolate cookie treat." }
-    ]
-  },
-  {
-    category: "DRINKS & SOFT DRINKS",
-    items: [
-      { name: "Coca-Cola", price: 20, description: "Chilled 250ml can/bottle." },
-      { name: "Diet Coke", price: 20, description: "Zero sugar cola." },
-      { name: "Pepsi", price: 20, description: "Chilled Pepsi." },
-      { name: "Sprite", price: 20, description: "Refreshing lemon-lime soda." },
-      { name: "Thums Up", price: 20, description: "Strong and fizzy taste of thunder." },
-      { name: "Heineken 0.0", price: 150, description: "Non-alcoholic malt beverage." },
-      { name: "Budweiser 0.0", price: 150, description: "Non-alcoholic beer." },
-      { name: "Corona Cero 0.0", price: 150, description: "Zero alcohol Mexican style beer." }
-    ]
-  }
+  { category: "PASTA", subtitle: "Fettuccine Pasta", portion: "250g | ₹229", items: [
+    { name: "Creamy Mushroom Alfredo", price: 229, badge: "⭐", description: "Fettuccine pasta, basil, garlic, Alfredo sauce" },
+    { name: "Aglio Olio", price: 229, description: "Spaghetti pasta, Parmesan cheese, garlic, EVOO sauce" },
+    { name: "Pesto Spaghetti", price: 229, description: "Spaghetti pasta, cherry tomatoes, pesto sauce" },
+    { name: "Classic Pomodoro", price: 229, description: "Spaghetti pasta, cherry tomatoes, basil, Pomodoro sauce" },
+    { name: "Spinach & Cheese Ravioli", price: 259, section: "Ravioli Pasta", portion: "250g [10P] | ₹259", badge: "⭐", description: "White sauce, garlic sauce" },
+    { name: "Pesto Paneer", price: 259, description: "Pink sauce, garlic sauce" },
+    { name: "Cheese Corn Jalapeños", price: 259, description: "Pink sauce, garlic sauce" },
+    { name: "Roasted Garlic Parmesan", price: 259, description: "White sauce" },
+    { name: "Forest Mushroom", price: 259, description: "Pesto sauce" },
+    { name: "Pesto Gnocchi", price: 259, section: "Gnocchi Pasta", portion: "250g | ₹259", description: "Cherry tomatoes, zucchini, Parmesan cheese, pesto sauce" },
+    { name: "Pomodoro Gnocchi", price: 259, description: "Spaghetti pasta, cherry tomatoes, basil, Pomodoro sauce" }
+  ] },
+  { category: "PIZZA", subtitle: "Make Your own", portion: "Size : 10\" | ₹369", items: [
+    { name: "Make Your Own Pizza", price: 369, description: "Choose your crust: Classic Italian, Flour, Multigrain Wellness. Pick your sauce: Pizza, Pesto, Garlic, Angry. Toppings: any five, extra ₹30 each. Drizzle: any one.", badge: "Any One" },
+    { name: "Margherita Pizza", price: 399, section: "Classic Italian", portion: "Size : 10\" | ₹399", description: "Pizza sauce, fresh mozzarella, fresh basil leaves, olive oil" },
+    { name: "Pesto Pizza", price: 419, badge: "⭐", description: "Pesto sauce, fresh mozzarella, cherry tomatoes, bell pepper, pesto drizzle, olive oil" },
+    { name: "Garden Harvest Pizza", price: 419, description: "Pizza sauce, fresh mozzarella, onions, bell pepper, olives, tomatoes, olive oil" },
+    { name: "Truffle Wild Mushroom", price: 449, description: "Garlic sauce, button mushroom, caramelized onion, fresh mozzarella, Parmesan cheese" },
+    { name: "Roasted Veggies Pesto Pizza", price: 439, description: "Pesto sauce, zucchini, bell peppers, roasted corn, olive, fresh mozzarella" },
+    { name: "Spicy Paneer Arrabbiata", price: 449, section: "Indo Fusion Pizza", portion: "Size : 10\" | ₹449", description: "Angry sauce, peri peri paneer, onion, jalapeños, bell pepper, fresh mozzarella, chilli oil drizzle" },
+    { name: "The Tikka Affair", price: 449, description: "Angry sauce, tandoori panner, onion, olives, bell pepper, fresh mozzarella, pesto drizzle" },
+    { name: "Chilli Bazaar", price: 439, badge: "🌶️", description: "Angry sauce, roasted corn, jalapeños, bell peppers, red paprika, fresh mozzarella, chipotle mayo drizzle" }
+  ] },
+  { category: "BREADS", subtitle: "Garlic Bread", portion: "", items: [
+    { name: "Classic Garlic Bread", price: 169, badge: "Four Pieces", description: "Slow roasted garlic paste, fresh mozzarella, oregano, Parmesan" },
+    { name: "Tandoori Panner", price: 189, description: "Garlic butter, tandoori panner, fresh mozzarella" },
+    { name: "Pesto Bruschetta", price: 209, badge: "⭐", description: "Tomatoes, fresh sliced mozzarella, pesto paste, olive oil" }
+  ] },
+  { category: "DESSERT", subtitle: "Cheesecake", portion: "180/500g | ₹189/699", items: [
+    { name: "New York Style", price: 189, description: "Topped with caramel / chocolate" },
+    { name: "Biscoff", price: 189, description: "Topped with melted Biscoff spread" },
+    { name: "Blueberry", price: 189, badge: "⭐", description: "Topped with blueberry sauce" },
+    { name: "Belgian Chocolate", price: 189, description: "Topped with chocolate shards" },
+    { name: "Key Lime", price: 189, description: "Topped with whipped cream & lime zest" },
+    { name: "Classic Tiramisu", price: 249, section: "Tiramisu", portion: "250g | ₹249", badge: "⭐", description: "Layers of espresso soaked biscuits, creamy mascarpone, and cocoa dusted to perfection" },
+    { name: "Biscoff Tiramisu", price: 269, description: "Creamy tiramisu layered with lotus biscoff spread and biscuit crumble for a rich caramelized finish" },
+    { name: "Strawberry Tiramisu", price: 259, description: "A refreshing twist on the Italian classic with fresh strawberries, silky macaroons, and delicate berry layers" }
+  ] },
+  { category: "COOKIE", subtitle: "", portion: "", items: [
+    { name: "Chocolate Chips", price: 79, priceLabel: "₹79 / ₹249", badge: "⭐", description: "Topped and filled with milk chocolate" },
+    { name: "Red Velvet", price: 89, priceLabel: "₹89 / ₹269", description: "Topped and filled with white chocolate" },
+    { name: "Double Chocolate", price: 99, priceLabel: "₹99 / ₹279", description: "Topped and filled with dark chocolate" }
+  ] },
+  { category: "DRINKS", subtitle: "Soft Drinks", portion: "250ml | ₹20", items: [
+    { name: "Coca-Cola", price: 20 }, { name: "Diet Coke", price: 20 }, { name: "Pepsi", price: 20 }, { name: "Sprite", price: 20 }, { name: "Thums Up", price: 20 },
+    { name: "Heineken 0.0", price: 150, section: "Non Alcoholic Beverage", portion: "330ml | ₹150" }, { name: "Budweiser 0.0", price: 150 }, { name: "Corona Cero 0.0", price: 150 }
+  ] }
 ];
