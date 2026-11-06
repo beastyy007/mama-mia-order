@@ -24,8 +24,22 @@ catContainer.innerHTML=h;
 window.fCat=cat=>{document.querySelectorAll('.cat-tab').forEach(b=>b.className=`cat-tab px-4 py-2 rounded-full text-xs font-semibold ${b.dataset.cat===cat?'bg-stone-950 text-white shadow':'bg-stone-200 text-stone-700'}`);document.querySelectorAll('.menu-sec').forEach(s=>s.style.display=(cat==='ALL'||s.dataset.category===cat)?'block':'none');}
 function renMenu(){
 const cont=document.getElementById('menu-container');if(!cont)return;
-let h='';menuData.forEach(cat=>{h+=`<div class="menu-sec space-y-3" data-category="${cat.category}"><div class="border-b pb-2 flex justify-between items-center"><h3 class="font-bold font-serif text-stone-900 text-lg">${cat.category}</h3></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
-cat.items.forEach(item=>{const ci=c.find(x=>x.name==item.name),q=ci?ci.qty:0,sn=item.name.replace(/'/g,"\\'");h+=`<div class="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 flex flex-col justify-between"><div><h4 class="font-bold text-stone-900 text-sm mb-1">${item.name}</h4><p class="text-xs text-stone-500 mb-3">${item.description}</p></div><div class="flex justify-between items-center pt-2 border-t"><span class="text-amber-700 font-bold">₹${item.price}</span>${q===0?`<button onclick="add('${sn}',${item.price})" class="bg-stone-900 hover:bg-stone-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow flex items-center gap-1"><i class="fa-solid fa-plus text-[10px]"></i> Add</button>`:`<div class="flex items-center space-x-2 bg-stone-100 rounded-xl p-1 border border-stone-200"><button onclick="upd('${sn}',-1)" class="w-7 h-7 bg-white rounded-lg shadow text-stone-700 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-minus"></i></button><span class="w-6 text-center font-bold text-xs">${q}</span><button onclick="upd('${sn}',1)" class="w-7 h-7 bg-amber-600 rounded-lg shadow text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-plus"></i></button></div>`}</div></div>`});h+=`</div></div>`;});cont.innerHTML=h;
+let h='';
+menuData.forEach(cat=>{
+  h+=`<section class="menu-sec space-y-4" data-category="${cat.category}">
+    <div class="flex justify-between items-end gap-3 border-b border-red-200 pb-2">
+      <div><h3 class="menu-section-title font-bold text-lg">${cat.category}</h3>${cat.subtitle?`<p class="menu-subtitle text-xs font-bold mt-1">${cat.subtitle}</p>`:''}</div>
+      ${cat.portion?`<span class="menu-subtitle text-xs font-bold text-right">${cat.portion}</span>`:''}
+    </div><div class="space-y-2">`;
+  let activeSection='';
+  cat.items.forEach(item=>{
+    if(item.section&&item.section!==activeSection){activeSection=item.section;h+=`<div class="flex justify-between items-end gap-3 pt-2"><h4 class="menu-section-title font-bold text-base">${item.section}</h4>${item.portion?`<span class="menu-subtitle text-xs font-bold">${item.portion}</span>`:''}</div>`;}
+    const ci=c.find(x=>x.name==item.name),q=ci?ci.qty:0,sn=item.name.replace(/'/g,"\\'"),label=item.priceLabel||`₹${item.price}`;
+    h+=`<div class="menu-item flex items-start gap-2 py-1.5"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-stone-900 text-sm">${item.badge&&item.badge.length>2?item.badge:''}${item.name}</h4>${item.badge&&item.badge.length>2?`<span class="menu-badge">${item.badge}</span>`:''}</div>${item.description?`<p class="text-[10px] text-stone-600 ml-3 mt-0.5">${item.description}</p>`:''}</div><div class="flex flex-col items-end gap-1 shrink-0"><span class="menu-price font-bold text-sm">${label}</span>${q===0?`<button onclick="add('${sn}',${item.price})" class="bg-stone-900 hover:bg-stone-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold">Add</button>`:`<div class="flex items-center space-x-1 bg-stone-100 rounded-lg p-0.5 border border-stone-200"><button onclick="upd('${sn}',-1)" class="w-6 h-6 bg-white rounded shadow text-stone-700 font-bold text-xs">−</button><span class="w-5 text-center font-bold text-xs">${q}</span><button onclick="upd('${sn}',1)" class="w-6 h-6 bg-amber-600 rounded shadow text-white font-bold text-xs">+</button></div>`}</div></div>`;
+  });
+  h+='</div></section>';
+});
+cont.innerHTML=h;
 }
 window.add=(n,p)=>{const x=c.find(x=>x.name==n);if(x)x.qty++;else c.push({name:n,price:p,qty:1});save();};
 window.upd=(n,d)=>{const i=c.findIndex(x=>x.name==n);if(i!=-1){c[i].qty+=d;if(c[i].qty<=0)c.splice(i,1);}save();};
