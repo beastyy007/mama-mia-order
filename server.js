@@ -12,6 +12,21 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ordersFile = path.join(__dirname, 'orders.json');
+const menuFile = path.join(__dirname, 'menu.json');
+
+function getMenu() {
+  if (!fs.existsSync(menuFile)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(menuFile, 'utf8'));
+  } catch (e) {
+    console.error('Failed to parse menu.json', e);
+    return [];
+  }
+}
+
+function saveMenu(menu) {
+  fs.writeFileSync(menuFile, JSON.stringify(menu, null, 2));
+}
 
 function getOrders() {
   if (!fs.existsSync(ordersFile)) {
@@ -28,6 +43,21 @@ function getOrders() {
 function saveOrders(orders) {
   fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
 }
+
+// Menu for customer ordering and admin management
+app.get('/api/menu', (req, res) => {
+  res.json(getMenu());
+});
+
+app.put('/api/menu', (req, res) => {
+  const menu = req.body;
+  if (!Array.isArray(menu)) return res.status(400).json({ status: 'error', message: 'Menu must be an array' });
+  if (menu.some(category => !category.category || !Array.isArray(category.items))) {
+    return res.status(400).json({ status: 'error', message: 'Invalid menu structure' });
+  }
+  saveMenu(menu);
+  res.json({ status: 'ok', menu });
+});
 
 // Get all orders (for Kitchen Display System)
 app.get('/api/orders', (req, res) => {
