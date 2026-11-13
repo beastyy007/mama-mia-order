@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mama Mia Admin Menu</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-stone-100 text-stone-900 min-h-screen"><main class="max-w-5xl mx-auto p-4 md:p-8">
+<header class="flex flex-wrap justify-between items-center gap-3 mb-6"><div><h1 class="text-3xl font-bold">Menu Admin Panel</h1><p class="text-sm text-stone-500">Add, remove, edit, or turn menu items on/off.</p></div><a href="/" class="bg-stone-900 text-white px-4 py-2 rounded-lg text-sm">Open Customer Menu</a></header>
+<section id="login" class="bg-white rounded-xl p-6 shadow max-w-md"><h2 class="text-xl font-bold mb-3">Admin Access</h2><input id="password" type="password" placeholder="Admin password" class="w-full border rounded-lg p-3 mb-3"><button onclick="login()" class="w-full bg-amber-600 text-white font-bold rounded-lg p-3">Login</button></section>
+<section id="panel" class="hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Current Menu</h2><button onclick="addItem()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold">+ Add Item</button></div><div id="menu" class="space-y-6"></div></section></main>
+<script>
+let menu=[]; const ADMIN_PASSWORD='madhuu';
+function login(){if(document.getElementById('password').value!==ADMIN_PASSWORD)return alert('Wrong password');document.getElementById('login').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');load();}
+async function load(){const r=await fetch('/api/menu',{cache:'no-store'});if(!r.ok)throw new Error('Could not load menu');menu=await r.json();render();}
+function esc(v){return String(v||'').replace(/[&<>\"]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[x]));}
+function render(){document.getElementById('menu').innerHTML=menu.map((cat,ci)=>`<section class="bg-white rounded-xl shadow p-4"><div class="flex gap-2 mb-3"><input value="${esc(cat.category)}" onchange="menu[${ci}].category=this.value;save()" class="font-bold text-lg border-b flex-1"><button onclick="removeCategory(${ci})" class="text-red-600 text-sm">Remove category</button></div><div class="space-y-3">${cat.items.map((item,ii)=>`<div class="border rounded-lg p-3 grid md:grid-cols-[1fr_100px_1fr_auto] gap-2 items-center ${item.available===false?'bg-red-50':''}"><input value="${esc(item.name)}" onchange="menu[${ci}].items[${ii}].name=this.value;save()" class="border rounded p-2"><input type="number" value="${item.price}" onchange="menu[${ci}].items[${ii}].price=Number(this.value);save()" class="border rounded p-2"><input value="${esc(item.description||'')}" placeholder="Description" onchange="menu[${ci}].items[${ii}].description=this.value;save()" class="border rounded p-2"><input value="${esc(item.image||'')}" placeholder="Image URL (https://...)" onchange="menu[${ci}].items[${ii}].image=this.value.trim();save()" class="border rounded p-2 md:col-span-2"><div class="flex gap-2"><button onclick="toggle(${ci},${ii})" class="px-2 py-1 rounded text-xs ${item.available===false?'bg-emerald-600 text-white':'bg-amber-100'}">${item.available===false?'Turn ON':'Turn OFF'}</button><button onclick="removeItem(${ci},${ii})" class="text-red-600 px-2">✕</button></div>${item.image?`<img src="${esc(item.image)}" onerror="this.style.display='none'" class="w-16 h-16 object-cover rounded-lg border" alt="${esc(item.name)} preview">`:''}</div>`).join('')}</div><button onclick="newItem(${ci})" class="mt-3 text-sm text-emerald-700 font-bold">+ Add item to ${esc(cat.category)}</button></section>`).join('');}
+async function toggle(ci,ii){
+  const item=menu[ci]?.items[ii];
+  if(!item)return;
+  item.available=item.available !== true;
+  render();
+  await save();
+}
+function newItem(ci){const name=prompt('Item name');if(!name)return;const price=Number(prompt('Price','0'));menu[ci].items.push({name,price:price||0,description:'',image:'',available:true});render();save();}
+function addItem(){const category=prompt('Category name');if(!category)return;const name=prompt('Item name');if(!name)return;const price=Number(prompt('Price','0'));menu.push({category,subtitle:'',portion:'',items:[{name,price:price||0,description:'',image:'',available:true}]});render();save();}
+function removeItem(ci,ii){if(confirm('Remove this item?')){menu[ci].items.splice(ii,1);render();save();}}
+function removeCategory(ci){if(confirm('Remove this category and all its items?')){menu.splice(ci,1);render();save();}}
+async function save(){
+  try {
+    const r=await fetch('/api/menu',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(menu),cache:'no-store'});
+    if(!r.ok)throw new Error('Could not save menu');
+    const result=await r.json();
+    menu=result.menu;
+    render();
+  } catch(e) {
+    alert('Could not save menu. Please try again.');
+    await load();
+  }
+}
+</script></body></html>
