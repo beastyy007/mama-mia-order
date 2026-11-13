@@ -23,22 +23,40 @@
     </div>
 
     <div id="kds-app" class="hidden">
-    <header class="flex justify-between items-center mb-6 border-b border-stone-800 pb-4">
-        <div>
-            <h1 class="text-2xl font-bold font-serif text-amber-500">Mama Mia Kitchen Display System (KDS)</h1>
-            <p class="text-xs text-stone-400">Live incoming orders from tables</p>
+    <header class="mb-5 border-b border-stone-800 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h1 class="text-2xl font-bold font-serif text-amber-500">Mama Mia Kitchen Display System (KDS)</h1>
+                <p class="text-xs text-stone-400">Live incoming orders from tables</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <span id="connection-status" class="rounded-full bg-stone-800 px-3 py-2 text-xs text-stone-400"><i class="fa-solid fa-circle mr-1 text-green-400"></i> Connected</span>
+                <button onclick="toggleFullscreen()" class="rounded-xl bg-stone-700 px-3 py-2 text-xs font-bold hover:bg-stone-600"><i class="fa-solid fa-expand"></i> Full screen</button>
+                <button onclick="toggleSound()" id="sound-button" class="rounded-xl bg-stone-700 px-3 py-2 text-xs font-bold hover:bg-stone-600"><i class="fa-solid fa-volume-high"></i> Sound on</button>
+                <button onclick="fetchOrders()" id="refresh-button" class="rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-stone-950 shadow hover:bg-amber-500"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
         </div>
-        <button onclick="fetchOrders()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-rotate"></i> Refresh
-        </button>
+        <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <input id="order-search" oninput="renderOrders()" type="search" placeholder="Search table, name, or order ID..." class="rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm outline-none focus:border-amber-500">
+            <select id="status-filter" onchange="renderOrders()" class="rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm outline-none focus:border-amber-500">
+                <option value="active">Active orders</option><option value="all">All orders</option><option value="Pending">New</option><option value="Preparing">Preparing</option><option value="Ready">Ready</option><option value="Completed">Completed</option>
+            </select>
+            <div class="flex items-center justify-between rounded-xl bg-stone-800 px-4 py-2.5 text-xs text-stone-400"><span><b id="active-count" class="text-amber-400">0</b> active</span><span>Last update: <b id="last-updated" class="text-stone-300">--</b></span></div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2 text-xs"><span class="rounded-full bg-green-500/20 px-3 py-1 text-green-300">● Under 10 min</span><span class="rounded-full bg-yellow-500/20 px-3 py-1 text-yellow-300">● 10–20 min</span><span class="rounded-full bg-red-500/20 px-3 py-1 text-red-300">● Over 20 min</span></div>
     </header>
 
-    <div id="kds-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="connection-error" class="mb-4 hidden rounded-xl border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-300"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Connection lost. Retrying automatically...</div>
+    <div id="kds-orders" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
     </div>
 
     <script>
         const KDS_PASSWORD = 'madhuu';
         let currentOrders = [];
+        let soundEnabled = true;
+        let lastOrderIds = new Set();
+        let audioContext;
+        const ACTIVE_STATUSES = ['Pending', 'Preparing', 'Preparing (Partial)', 'Ready'];
 
         function unlockKds(event) {
             event.preventDefault();
@@ -54,13 +72,61 @@
             document.getElementById('kds-app').classList.remove('hidden');
             fetchOrders();
             setInterval(fetchOrders, 60000);
+            setInterval(updateTimers, 1000);
         }
 
+        function setConnection(ok) {
+            const badge = document.getElementById('connection-status');
+            document.getElementById('connection-error').classList.toggle('hidden', ok);
+            badge.innerHTML = ok ? '<i class="fa-solid fa-circle mr-1 text-green-400"></i> Connected' : '<i class="fa-solid fa-circle mr-1 text-red-400"></i> Offline';
+            badge.className = `rounded-full px-3 py-2 text-xs ${ok ? 'bg-stone-800 text-stone-400' : 'bg-red-500/20 text-red-300'}`;
+        }
+        function statusName(status) { return status === 'Preparing (Partial)' ? 'Preparing' : (status || 'Pending'); }
+        function age(order) {
+            const nativeDate = new Date(order.timestamp);
+            if (!Number.isNaN(nativeDate.getTime())) return Math.max(0, Math.floor((Date.now() - nativeDate.getTime()) / 60000));
+            const match = String(order.timestamp || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s*(\d{1,2}):(\d{2}):(\d{2})\s*(am|pm)$/i);
+            if (!match) return 0;
+            let hour = Number(match[4]);
+            if (match[7].toLowerCase() === 'pm' && hour < 12) hour += 12;
+            if (match[7].toLowerCase() === 'am' && hour === 12) hour = 0;
+            const date = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]), hour, Number(match[5]), Number(match[6]));
+            return Math.max(0, Math.floor((Date.now() - date.getTime()) / 60000));
+        }
+        function ageStyle(minutes) { return minutes >= 20 ? 'text-red-300 bg-red-500/20 border-red-500/50' : minutes >= 10 ? 'text-yellow-300 bg-yellow-500/20 border-yellow-500/50' : 'text-green-300 bg-green-500/20 border-green-500/50'; }
+        function safe(value) { return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c])); }
+        function drawOrders() {
+            const query = document.getElementById('order-search').value.toLowerCase().trim();
+            const filter = document.getElementById('status-filter').value;
+            const active = currentOrders.filter(o => ACTIVE_STATUSES.includes(o.status));
+            document.getElementById('active-count').textContent = active.length;
+            const orders = currentOrders.filter(o => {
+                const status = statusName(o.status);
+                const matchesFilter = filter === 'active' ? ACTIVE_STATUSES.includes(o.status) : filter === 'all' || status === filter;
+                const text = `${o.id} ${o.table} ${o.customerName || ''} ${o.customerPhone || ''}`.toLowerCase();
+                return matchesFilter && text.includes(query);
+            });
+            const container = document.getElementById('kds-orders');
+            if (!orders.length) { container.innerHTML = '<div class="col-span-full rounded-2xl border border-stone-800 bg-stone-800/50 py-16 text-center text-stone-500"><i class="fa-solid fa-utensils mb-3 text-4xl"></i><p>No matching orders.</p></div>'; return; }
+            container.innerHTML = orders.map(o => {
+                const minutes = age(o), status = statusName(o.status);
+                const options = ['Pending','Preparing','Ready','Completed'].map(s => `<option value="${s}" ${s === status ? 'selected' : ''}>${s}</option>`).join('');
+                return `<article class="rounded-2xl border ${minutes >= 20 ? 'border-red-500/60' : minutes >= 10 ? 'border-yellow-500/60' : 'border-stone-700'} bg-stone-800 p-5 shadow-xl"><div class="mb-3 flex justify-between"><span class="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-stone-950">Table #${safe(o.table)}</span><span class="rounded-full bg-amber-500/20 px-2.5 py-1 text-xs font-semibold text-amber-300">${status}</span></div><div class="mb-3 flex justify-between"><b>${safe(o.customerName || 'Guest')}</b><span data-age="${safe(o.id)}" class="rounded-lg border px-2 py-1 text-xs font-bold ${ageStyle(minutes)}">${minutes} min</span></div>${o.notes ? `<div class="mb-3 rounded-xl border border-red-500/40 bg-red-500/10 p-2.5 text-xs text-red-300"><b>Note:</b> ${safe(o.notes)}</div>` : ''}<ul class="mb-4 space-y-1.5 border-t border-stone-700 pt-3 text-sm">${(o.items || []).map(i => `<li class="flex justify-between rounded-lg bg-stone-900/40 px-2.5 py-1.5"><span>${safe(i.name)}</span><b class="text-amber-400">x${safe(i.qty)}</b></li>`).join('')}</ul><div class="flex items-center justify-between border-t border-stone-700 pt-3"><span class="text-sm font-bold">Total: <span class="text-amber-400">₹${safe(o.total)}</span></span><div class="flex gap-2"><select onchange="setOrderStatus('${safe(o.id)}', this.value)" class="rounded-lg border border-stone-600 bg-stone-900 px-2 py-1.5 text-xs font-bold">${options}</select>${status === 'Ready' ? `<button onclick="notifyReady('${safe(o.id)}')" class="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-bold"><i class="fa-brands fa-whatsapp"></i></button>` : ''}</div></div></article>`;
+            }).join('');
+        }
         async function fetchOrders(){
             try {
-                const r = await fetch('/api/orders');
+                const r = await fetch('/api/orders', { cache: 'no-store' });
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json();
-                currentOrders = data; // Store orders globally
+                const incoming = data.filter(o => !lastOrderIds.has(o.id) && o.status === 'Pending');
+                if (lastOrderIds.size && incoming.length) playAlert();
+                lastOrderIds = new Set(data.map(o => o.id));
+                currentOrders = Array.isArray(data) ? data : [];
+                setConnection(true);
+                document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+                drawOrders();
+                return;
                 const cont = document.getElementById('kds-orders');
                 if(!data || data.length === 0) {
                     cont.innerHTML = `<div class="col-span-full text-center py-12 text-stone-500"><i class="fa-solid fa-utensils text-4xl mb-2"></i><p>No active orders right now.</p></div>`;
@@ -118,7 +184,49 @@
                 `).join('');
             } catch (err) {
                 console.error(err);
+                setConnection(false);
             }
+        }
+        function updateTimers() {
+            currentOrders.forEach(order => {
+                const node = document.querySelector(`[data-age="${CSS.escape(order.id)}"]`);
+                if (!node) return;
+                const minutes = age(order);
+                node.textContent = `${minutes} min`;
+                node.className = `rounded-lg border px-2 py-1 text-xs font-bold ${ageStyle(minutes)}`;
+            });
+        }
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-button').innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i> Sound on' : '<i class="fa-solid fa-volume-xmark"></i> Sound off';
+        }
+        function playAlert() {
+            if (!soundEnabled) return;
+            audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            oscillator.frequency.value = 880;
+            gain.gain.value = 0.08;
+            oscillator.connect(gain); gain.connect(audioContext.destination);
+            oscillator.start(); oscillator.stop(audioContext.currentTime + 0.25);
+        }
+        function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+        async function setOrderStatus(id, status) {
+            const order = currentOrders.find(item => item.id === id);
+            if (!order) return;
+            try {
+                const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ status }) });
+                if (!response.ok) throw new Error('Status update failed');
+                order.status = status;
+                drawOrders();
+            } catch (error) { setConnection(false); alert('Could not update the order. Please try again.'); }
+        }
+        function notifyReady(id) {
+            const order = currentOrders.find(item => item.id === id);
+            if (!order || !order.customerPhone) return alert('No customer phone number is available for this order.');
+            const items = (order.items || []).map(item => `• ${item.name} x${item.qty}`).join('%0A');
+            const message = `*🍕 Order Ready - Mama Mia Artisan Kitchen*%0A%0AHi *${encodeURIComponent(order.customerName || 'Customer')}*, your order for *Table #${encodeURIComponent(order.table)}* is ready at the counter:%0A%0A${encodeURIComponent(items)}%0A%0APlease collect your items. Thank you!`;
+            window.open(`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
         }
         async function updStatus(id){
             const order = currentOrders.find(o => o.id === id);
