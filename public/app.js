@@ -1,6 +1,10 @@
-import { menuData } from './menuData.js';
+let menuData = [];
 let c=JSON.parse(localStorage.getItem('m_cart'))||[],t=localStorage.getItem('m_tbl')||null;
-document.addEventListener('DOMContentLoaded',()=>{init();renTabs();renMenu();updCart();setupBtns();});
+document.addEventListener('DOMContentLoaded',async()=>{await loadMenu();init();renTabs();renMenu();updCart();setupBtns();});
+async function loadMenu(){
+  try { const res=await fetch('/api/menu',{cache:'no-store'}); if(!res.ok) throw new Error('Menu unavailable'); menuData=await res.json(); }
+  catch(e){ console.error(e); alert('Unable to load the menu. Please refresh.'); }
+}
 function init(){
 const p=new URLSearchParams(window.location.search).get('table');
 if(p&&p>=1&&p<=6){t=p;localStorage.setItem('m_tbl',t);}
@@ -35,13 +39,14 @@ menuData.forEach(cat=>{
   cat.items.forEach(item=>{
     if(item.section&&item.section!==activeSection){activeSection=item.section;h+=`<div class="flex justify-between items-end gap-3 pt-2"><h4 class="menu-section-title font-bold text-base">${item.section}</h4>${item.portion?`<span class="menu-subtitle text-xs font-bold">${item.portion}</span>`:''}</div>`;}
     const ci=c.find(x=>x.name==item.name),q=ci?ci.qty:0,sn=item.name.replace(/'/g,"\\'"),label=item.priceLabel||`₹${item.price}`;
-    h+=`<div class="menu-item flex items-start gap-2 py-1.5"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-stone-900 text-sm">${item.badge&&item.badge.length>2?item.badge:''}${item.name}</h4>${item.badge&&item.badge.length>2?`<span class="menu-badge">${item.badge}</span>`:''}</div>${item.description?`<p class="text-[10px] text-stone-600 ml-3 mt-0.5">${item.description}</p>`:''}</div><div class="flex flex-col items-end gap-1 shrink-0"><span class="menu-price font-bold text-sm">${label}</span>${q===0?`<button onclick="add('${sn}',${item.price})" class="bg-stone-900 hover:bg-stone-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold">Add</button>`:`<div class="flex items-center space-x-1 bg-stone-100 rounded-lg p-0.5 border border-stone-200"><button onclick="upd('${sn}',-1)" class="w-6 h-6 bg-white rounded shadow text-stone-700 font-bold text-xs">−</button><span class="w-5 text-center font-bold text-xs">${q}</span><button onclick="upd('${sn}',1)" class="w-6 h-6 bg-amber-600 rounded shadow text-white font-bold text-xs">+</button></div>`}</div></div>`;
+    const unavailable=item.available===false;
+    h+=`<div class="menu-item flex items-start gap-2 py-1.5 ${unavailable?'opacity-50':''}">${item.image?`<img src="${item.image}" onerror="this.style.display='none'" class="w-16 h-16 object-cover rounded-lg border border-stone-200 shrink-0" alt="${item.name}">`:''}<div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-stone-900 text-sm">${item.badge&&item.badge.length>2?item.badge:''}${item.name}</h4>${item.badge&&item.badge.length>2?`<span class="menu-badge">${item.badge}</span>`:''}</div>${item.description?`<p class="text-[10px] text-stone-600 ml-3 mt-0.5">${item.description}</p>`:''}</div><div class="flex flex-col items-end gap-1 shrink-0"><span class="menu-price font-bold text-sm">${label}</span>${unavailable?`<span class="text-[10px] font-semibold text-red-700">Unavailable</span>`:q===0?`<button onclick="add('${sn}',${item.price})" class="bg-stone-900 hover:bg-stone-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold">Add</button>`:`<div class="flex items-center space-x-1 bg-stone-100 rounded-lg p-0.5 border border-stone-200"><button onclick="upd('${sn}',-1)" class="w-6 h-6 bg-white rounded shadow text-stone-700 font-bold text-xs">−</button><span class="w-5 text-center font-bold text-xs">${q}</span><button onclick="upd('${sn}',1)" class="w-6 h-6 bg-amber-600 rounded shadow text-white font-bold text-xs">+</button></div>`}</div></div>`;
   });
   h+='</div></section>';
 });
 cont.innerHTML=h;
 }
-window.add=(n,p)=>{const x=c.find(x=>x.name==n);if(x)x.qty++;else c.push({name:n,price:p,qty:1});save();};
+window.add=(n,p)=>{const item=menuData.flatMap(cat=>cat.items).find(x=>x.name===n);if(item?.available===false)return alert('This item is currently unavailable.');const x=c.find(x=>x.name==n);if(x)x.qty++;else c.push({name:n,price:p,qty:1});save();};
 window.upd=(n,d)=>{const i=c.findIndex(x=>x.name==n);if(i!=-1){c[i].qty+=d;if(c[i].qty<=0)c.splice(i,1);}save();};
 function save(){localStorage.setItem('m_cart',JSON.stringify(c));renMenu();updCart();}
 
