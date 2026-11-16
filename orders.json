@@ -1,5 +1,32 @@
 [
   {
+    "id": "ORD-811364",
+    "table": "2",
+    "customerName": "harshil",
+    "customerPhone": "6353457139",
+    "notes": "",
+    "items": [
+      {
+        "name": "Creamy Mushroom Alfredo",
+        "price": 229,
+        "qty": 1
+      },
+      {
+        "name": "Aglio Olio",
+        "price": 229,
+        "qty": 1
+      },
+      {
+        "name": "Classic Garlic Bread",
+        "price": 169,
+        "qty": 1
+      }
+    ],
+    "total": 658,
+    "status": "Completed",
+    "timestamp": "13/11/2026, 2:53:31 pm"
+  },
+  {
     "id": "ORD-101323",
     "table": "1",
     "customerName": "jenil",
@@ -95,7 +122,7 @@
       }
     ],
     "total": 1611,
-    "status": "Pending",
+    "status": "Completed",
     "timestamp": "24/10/2026, 3:13:06 pm"
   },
   {
@@ -147,7 +174,7 @@
       }
     ],
     "total": 1642,
-    "status": "Pending",
+    "status": "Completed",
     "timestamp": "24/10/2026, 2:47:37 pm"
   }
 ]
