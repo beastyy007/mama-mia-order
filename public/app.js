@@ -146,3 +146,22 @@ window.placeOrder = async function(type) {
             const idEl = document.getElementById('success-order-id');
             const isPickup = String(t).toLowerCase().includes('pickup') || String(t).toLowerCase().includes('self');
             if (msgEl) msgEl.textContent = isPickup ? `Order sent for Pickup / Self-Service!` : `Order sent for Table #${t}!`;
+            if (idEl) idEl.textContent = `Order ID: #${result.order?.id || 'N/A'}`;
+            if (modal) modal.classList.remove('hidden');
+            c = [];
+            localStorage.removeItem('m_cart');
+            renMenu();
+            updCart();
+        } else {
+            alert('Failed to place order: ' + (result.message || 'Server error'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Network error while placing order.');
+    }
+};
+
+window.closeSuccessModal = function() {
+    const modal = document.getElementById('success-modal');
+    if (modal) modal.classList.add('hidden');
+};
