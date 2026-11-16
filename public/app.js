@@ -12,11 +12,24 @@ updTbl();if(!t)openTbl();
 }
 function setupBtns(){
 const cont=document.getElementById('table-buttons');if(!cont)return;
-let h='';for(let i=1;i<=6;i++)h+=`<button onclick="setTbl(${i})" class="py-3 rounded-xl border font-bold text-base ${t==i?'bg-amber-600 text-white':'bg-stone-50'}">Table ${i}</button>`;
+let h='';
+for(let i=1;i<=6;i++){
+  h+=`<button onclick="setTbl(${i})" class="py-3 rounded-xl border font-bold text-base ${t==i?'bg-amber-600 text-white':'bg-stone-50'}">Table ${i}</button>`;
+}
+h+=`<button onclick="setTbl('Pickup / Self-Service')" class="col-span-3 py-3 rounded-xl border font-bold text-base ${t==='Pickup / Self-Service'?'bg-amber-600 text-white':'bg-emerald-50 text-emerald-800 border-emerald-300'}">🛍️ Pickup / Self-Service</button>`;
 cont.innerHTML=h;
 }
 window.setTbl=n=>{t=n;localStorage.setItem('m_tbl',n);updTbl();setupBtns();setTimeout(closeTbl,300);};
-function updTbl(){const e=document.getElementById('current-table-text');if(e)e.textContent=t?`Table #${t}`:`Select Table`;}
+function updTbl(){
+  const e=document.getElementById('current-table-text');
+  if(e){
+    if(t==='Pickup / Self-Service'||t==='Pickup'){
+      e.textContent='Pickup / Self-Service';
+    } else {
+      e.textContent=t?`Table #${t}`:`Select Table`;
+    }
+  }
+}
 window.openTbl=()=>document.getElementById('table-modal')?.classList.remove('hidden');
 window.closeTbl=()=>{if(!t){alert('Select table!');return;}document.getElementById('table-modal')?.classList.add('hidden');}
 function renTabs(){
@@ -101,8 +114,13 @@ window.placeOrder = async function(type) {
     };
 
     if (type === 'whatsapp') {
+        const isPickup = String(t).toLowerCase().includes('pickup') || String(t).toLowerCase().includes('self');
         let msg = `*🍕 New Order - Mama Mia Artisan Kitchen*%0A`;
-        msg += `📍 *Table:* #${t}%0A`;
+        if (isPickup) {
+            msg += `🛍️ *Order Type:* Pickup / Self-Service%0A`;
+        } else {
+            msg += `📍 *Table:* #${t}%0A`;
+        }
         msg += `👤 *Customer:* ${name} ${phone ? '(' + phone + ')' : ''}%0A`;
         if (notes) msg += `📝 *Notes:* ${notes}%0A`;
         msg += `-------------------%0A`;
@@ -126,23 +144,5 @@ window.placeOrder = async function(type) {
             const modal = document.getElementById('success-modal');
             const msgEl = document.getElementById('success-message');
             const idEl = document.getElementById('success-order-id');
-            if (msgEl) msgEl.textContent = `Order sent for Table #${t}!`;
-            if (idEl) idEl.textContent = `Order ID: #${result.order?.id || 'N/A'}`;
-            if (modal) modal.classList.remove('hidden');
-            c = [];
-            localStorage.removeItem('m_cart');
-            renMenu();
-            updCart();
-        } else {
-            alert('Failed to place order: ' + (result.message || 'Server error'));
-        }
-    } catch (e) {
-        console.error(e);
-        alert('Network error while placing order.');
-    }
-};
-
-window.closeSuccessModal = function() {
-    const modal = document.getElementById('success-modal');
-    if (modal) modal.classList.add('hidden');
-};
+            const isPickup = String(t).toLowerCase().includes('pickup') || String(t).toLowerCase().includes('self');
+            if (msgEl) msgEl.textContent = isPickup ? `Order sent for Pickup / Self-Service!` : `Order sent for Table #${t}!`;
