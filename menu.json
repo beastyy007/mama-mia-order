@@ -141,8 +141,8 @@
       {
         "name": "Chilli Bazaar",
         "price": 439,
-        "badge": "???",
-        "description": "Angry sauce, roasted corn, jalape?os, bell peppers, red paprika, fresh mozzarella, chipotle mayo drizzle",
+        "badge": "",
+        "description": "Angry sauce, roasted corn, jalapenos, bell peppers, red paprika, fresh mozzarella, chipotle mayo drizzle",
         "available": true
       }
     ]
