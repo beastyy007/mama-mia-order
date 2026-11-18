@@ -354,9 +354,9 @@
                 drawOrders();
 
                 if (order.customerPhone) {
-                    const itemText = selected.map(item => `• ${item.name} x${item.qty}`).join('\n');
-                    const rawMessage = `*🍕 Items Ready - Mama Mia Artisan Kitchen*\n\nHi *${order.customerName || 'Customer'}*, these items from your order for *Table #${order.table}* are ready:\n\n${itemText}\n\nPlease collect them from the counter. Thank you!`;
-                    window.open(`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(rawMessage)}`, '_blank');
+                   const itemText = selected.map(item => `• ${item.name} x${item.qty}`).join('%0A');
+const message = `*🍕 Items Ready - Mama Mia Artisan Kitchen*%0A%0AHi *${encodeURIComponent(order.customerName || 'Customer')}*, these items from your order for *Table #${encodeURIComponent(order.table)}* are ready:%0A%0A${itemText}%0A%0APlease collect them from the counter. Thank you!`;
+window.open(`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
                 }
             } catch (error) {
                 setConnection(false);
