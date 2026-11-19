@@ -64,10 +64,12 @@ window.upd=(n,d)=>{const i=c.findIndex(x=>x.name==n);if(i!=-1){c[i].qty+=d;if(c[
 function save(){localStorage.setItem('m_cart',JSON.stringify(c));renMenu();updCart();}
 
 function updCart(){
-const tQty=c.reduce((s,x)=>s+x.qty,0),sub=c.reduce((s,x)=>s+(x.price*x.qty),0),tax=Math.round(sub*0.05),g=sub+tax;
+const tQty=c.reduce((s,x)=>s+x.qty,0),sub=c.reduce((s,x)=>s+(x.price*x.qty),0),tax=0,g=sub;
 document.getElementById('cart-count-badge').textContent=tQty;document.getElementById('cart-bar-total').textContent=`₹${g}`;
 document.getElementById('cart-bar').classList.toggle('translate-y-full',tQty===0);
-document.getElementById('cart-subtotal').textContent=`₹${sub}`;document.getElementById('cart-tax').textContent=`₹${tax}`;document.getElementById('cart-grand-total').textContent=`₹${g}`;
+document.getElementById('cart-subtotal').textContent=`₹${sub}`;
+const taxEl=document.getElementById('cart-tax');if(taxEl)taxEl.textContent=`₹${tax}`;
+document.getElementById('cart-grand-total').textContent=`₹${g}`;
 const cont=document.getElementById('cart-items-container');if(!cont)return;
 if(c.length===0){cont.innerHTML=`<p class="text-center">Empty</p>`;return;}
 let h='';c.forEach(i=>{const sn=i.name.replace(/'/g,"\\'");h+=`<div class="flex justify-between items-center bg-stone-50 p-2 rounded">${i.name} (${i.qty}) <button onclick="upd('${sn}',-1)" class="px-2 bg-stone-200">-</button></div>`;});cont.innerHTML=h;
@@ -98,8 +100,8 @@ window.placeOrder = async function(type) {
         return;
     }
     const sub = c.reduce((s, x) => s + (x.price * x.qty), 0);
-    const tax = Math.round(sub * 0.05);
-    const total = sub + tax;
+    const tax = 0;
+    const total = sub;
 
     const orderData = {
         table: t,
@@ -126,7 +128,7 @@ window.placeOrder = async function(type) {
         msg += `-------------------%0A`;
         c.forEach(i => { msg += `• ${i.name} x${i.qty} = ₹${i.price * i.qty}%0A`; });
         msg += `-------------------%0A`;
-        msg += `*Subtotal:* ₹${sub}%0A*GST (5%):* ₹${tax}%0A*Grand Total:* ₹${total}%0A`;
+        msg += `*Grand Total:* ₹${total}%0A`;
         msg += `_Sent via QR Ordering_`;
         window.open(`https://wa.me/918799106267?text=${msg}`, '_blank');
         return;
