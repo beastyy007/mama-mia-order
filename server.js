@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ordersFile = path.join(__dirname, 'orders.json');
@@ -107,7 +108,25 @@ app.patch('/api/orders/:id/status', (req, res) => {
   res.json({ status: 'ok', order });
 });
 
+// Delete / Cancel order
+app.delete('/api/orders/:id', (req, res) => {
+  const { id } = req.params;
+  let orders = getOrders();
+  const initialLen = orders.length;
+  orders = orders.filter(o => o.id !== id);
+  if (orders.length === initialLen) {
+    return res.status(404).json({ status: 'error', message: 'Order not found' });
+  }
+  saveOrders(orders);
+  res.json({ status: 'ok', message: 'Order deleted/cancelled successfully' });
+});
+
 function orderDate(order) {
+  if (!order.timestamp) return null;
+  const d = new Date(order.timestamp);
+  if (!isNaN(d.getTime())) {
+    return { day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() };
+  }
   const match = String(order.timestamp || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   if (!match) return null;
   const [, day, month, year] = match;
@@ -215,5 +234,4 @@ app.get('/api/reports/monthly.pdf', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Mama Mia Artisan Kitchen server listening on http://localhost:${PORT}`);
 });
-
 
