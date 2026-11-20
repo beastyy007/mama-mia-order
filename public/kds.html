@@ -73,6 +73,7 @@
             document.getElementById('kds-login').classList.add('hidden');
             document.getElementById('kds-app').classList.remove('hidden');
             fetchOrders();
+            loadMenuAndPopulateItems();
             setInterval(fetchOrders, 60000);
             setInterval(updateTimers, 1000);
         }
@@ -258,16 +259,32 @@
             const allReady = selected.length === (order.items || []).length;
             const nextStatus = allReady ? 'Ready' : 'Preparing (Partial)';
             try {
-                const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ status: nextStatus }) });
+                const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, { 
+                    method: 'PATCH', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ status: nextStatus }) 
+                });
                 if (!response.ok) throw new Error('Status update failed');
                 order.status = nextStatus;
                 drawOrders();
-                const itemText = selected.map(item => `• ${item.name} x${item.qty}`).join('%0A');
+
                 if (order.customerPhone) {
-                    const message = `*🍕 Items Ready - Mama Mia Artisan Kitchen*%0A%0AHi *${encodeURIComponent(order.customerName || 'Customer')}*, these items from your order for *Table #${encodeURIComponent(order.table)}* are ready:%0A%0A${encodeURIComponent(itemText)}%0A%0APlease collect them from the counter. Thank you!`;
-                    window.open(`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+                    const phone = order.customerPhone.replace(/[^0-9]/g, '');
+                    const customerName = order.customerName || 'Customer';
+                    const itemsList = selected.map(item => `• ${item.name} x${item.qty}`).join('\n');
+                    
+                    const rawMessage = `*🍕 Items Ready - Mama Mia Artisan Kitchen*\n\n` +
+                        `Hi *${customerName}*, these items from your order for *Table #${order.table}* are ready:\n\n` +
+                        `${itemsList}\n\n` +
+                        `Please collect them from the counter. Thank you!`;
+
+                    const message = encodeURIComponent(rawMessage);
+                    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
                 }
-            } catch (error) { setConnection(false); alert('Could not update the ready items. Please try again.'); }
+            } catch (error) { 
+                setConnection(false); 
+                alert('Could not update the ready items. Please try again.'); 
+            }
         }
         async function updStatus(id){
             const order = currentOrders.find(o => o.id === id);
