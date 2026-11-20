@@ -39,12 +39,12 @@ export const menuData = [
     { name: "Strawberry Tiramisu", price: 259, description: "A refreshing twist on the Italian classic with fresh strawberries, silky macaroons, and delicate berry layers" }
   ] },
   { category: "COOKIE", subtitle: "", portion: "", items: [
-    { name: "Chocolate Chips", price: 79, priceLabel: "₹79 / ₹249", badge: "⭐", description: "Topped and filled with milk chocolate" },
-    { name: "Red Velvet", price: 89, priceLabel: "₹89 / ₹269", description: "Topped and filled with white chocolate" },
-    { name: "Double Chocolate", price: 99, priceLabel: "₹99 / ₹279", description: "Topped and filled with dark chocolate" }
+    { name: "Chocolate Chips", price: 79, priceLabel: "₹79", badge: "⭐", description: "Topped and filled with milk chocolate" },
+    { name: "Red Velvet", price: 89, priceLabel: "₹89", description: "Topped and filled with white chocolate" },
+    { name: "Double Chocolate", price: 99, priceLabel: "₹99", description: "Topped and filled with dark chocolate" }
   ] },
   { category: "DRINKS", subtitle: "Soft Drinks", portion: "250ml | ₹20", items: [
-    { name: "Coca-Cola", price: 20 }, { name: "Diet Coke", price: 20 }, { name: "Pepsi", price: 20 }, { name: "Sprite", price: 20 }, { name: "Thums Up", price: 20 },
+    { name: "Coca-Cola", price: 20 }, { name: "Diet Coke", price: 50 }, { name: "Pepsi", price: 20 }, { name: "Sprite", price: 20 }, { name: "Thums Up", price: 20 },
     { name: "Heineken 0.0", price: 150, section: "Non Alcoholic Beverage", portion: "330ml | ₹150" }, { name: "Budweiser 0.0", price: 150 }, { name: "Corona Cero 0.0", price: 150 }
   ] }
 ];
