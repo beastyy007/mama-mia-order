@@ -1,32 +1,5 @@
 [
   {
-    "id": "ORD-811364",
-    "table": "2",
-    "customerName": "harshil",
-    "customerPhone": "6353457139",
-    "notes": "",
-    "items": [
-      {
-        "name": "Creamy Mushroom Alfredo",
-        "price": 229,
-        "qty": 1
-      },
-      {
-        "name": "Aglio Olio",
-        "price": 229,
-        "qty": 1
-      },
-      {
-        "name": "Classic Garlic Bread",
-        "price": 169,
-        "qty": 1
-      }
-    ],
-    "total": 658,
-    "status": "Completed",
-    "timestamp": "13/11/2026, 2:53:31 pm"
-  },
-  {
     "id": "ORD-892812",
     "table": "2",
     "customerName": "harshil",
