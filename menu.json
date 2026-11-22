@@ -2,12 +2,12 @@
   {
     "category": "PASTA",
     "subtitle": "Fettuccine Pasta",
-    "portion": "250g | ?229",
+    "portion": "250g | ₹229",
     "items": [
       {
         "name": "Creamy Mushroom Alfredo",
         "price": 229,
-        "badge": "?",
+        "badge": "",
         "description": "Fettuccine pasta, basil, garlic, Alfredo sauce",
         "available": true,
         "image": ""
@@ -34,8 +34,8 @@
         "name": "Spinach & Cheese Ravioli",
         "price": 259,
         "section": "Ravioli Pasta",
-        "portion": "250g [10P] | ?259",
-        "badge": "?",
+        "portion": "250g [10P] | ₹259",
+        "badge": "",
         "description": "White sauce, garlic sauce",
         "available": true
       },
@@ -46,7 +46,7 @@
         "available": true
       },
       {
-        "name": "Cheese Corn Jalape?os",
+        "name": "Cheese Corn Jalapeños",
         "price": 259,
         "description": "Pink sauce, garlic sauce",
         "available": true
@@ -67,7 +67,7 @@
         "name": "Pesto Gnocchi",
         "price": 259,
         "section": "Gnocchi Pasta",
-        "portion": "250g | ?259",
+        "portion": "250g | ₹259",
         "description": "Cherry tomatoes, zucchini, Parmesan cheese, pesto sauce",
         "available": true
       },
@@ -81,13 +81,13 @@
   },
   {
     "category": "PIZZA",
-    "subtitle": "Make Your own",
-    "portion": "Size : 10\" | ?369",
+    "subtitle": "Make Your Own",
+    "portion": "Size : 10\" | ₹369",
     "items": [
       {
         "name": "Make Your Own Pizza",
         "price": 369,
-        "description": "Choose your crust: Classic Italian, Flour, Multigrain Wellness. Pick your sauce: Pizza, Pesto, Garlic, Angry. Toppings: any five, extra ?30 each. Drizzle: any one.",
+        "description": "Choose your crust: Classic Italian, Flour, Multigrain Wellness. Pick your sauce: Pizza, Pesto, Garlic, Angry. Toppings: any five, extra ₹30 each. Drizzle: any one.",
         "badge": "Any One",
         "available": true
       },
@@ -95,14 +95,14 @@
         "name": "Margherita Pizza",
         "price": 399,
         "section": "Classic Italian",
-        "portion": "Size : 10\" | ?399",
+        "portion": "Size : 10\" | ₹399",
         "description": "Pizza sauce, fresh mozzarella, fresh basil leaves, olive oil",
         "available": true
       },
       {
         "name": "Pesto Pizza",
         "price": 419,
-        "badge": "?",
+        "badge": "",
         "description": "Pesto sauce, fresh mozzarella, cherry tomatoes, bell pepper, pesto drizzle, olive oil",
         "available": true
       },
@@ -128,21 +128,21 @@
         "name": "Spicy Paneer Arrabbiata",
         "price": 449,
         "section": "Indo Fusion Pizza",
-        "portion": "Size : 10\" | ?449",
-        "description": "Angry sauce, peri peri paneer, onion, jalape?os, bell pepper, fresh mozzarella, chilli oil drizzle",
+        "portion": "Size : 10\" | ₹449",
+        "description": "Angry sauce, peri peri paneer, onion, jalapeños, bell pepper, fresh mozzarella, chilli oil drizzle",
         "available": true
       },
       {
         "name": "The Tikka Affair",
         "price": 449,
-        "description": "Angry sauce, tandoori panner, onion, olives, bell pepper, fresh mozzarella, pesto drizzle",
+        "description": "Angry sauce, tandoori paneer, onion, olives, bell pepper, fresh mozzarella, pesto drizzle",
         "available": true
       },
       {
         "name": "Chilli Bazaar",
         "price": 439,
-        "badge": "???",
-        "description": "Angry sauce, roasted corn, jalape?os, bell peppers, red paprika, fresh mozzarella, chipotle mayo drizzle",
+        "badge": "Spicy",
+        "description": "Angry sauce, roasted corn, jalapeños, bell peppers, red paprika, fresh mozzarella, chipotle mayo drizzle",
         "available": true
       }
     ]
@@ -160,15 +160,15 @@
         "available": true
       },
       {
-        "name": "Tandoori Panner",
+        "name": "Tandoori Paneer",
         "price": 189,
-        "description": "Garlic butter, tandoori panner, fresh mozzarella",
+        "description": "Garlic butter, tandoori paneer, fresh mozzarella",
         "available": true
       },
       {
         "name": "Pesto Bruschetta",
         "price": 209,
-        "badge": "?",
+        "badge": "",
         "description": "Tomatoes, fresh sliced mozzarella, pesto paste, olive oil",
         "available": true
       }
@@ -177,7 +177,7 @@
   {
     "category": "DESSERT",
     "subtitle": "Cheesecake",
-    "portion": "180/500g | ?189/699",
+    "portion": "180/500g | ₹189/699",
     "items": [
       {
         "name": "New York Style",
@@ -194,7 +194,7 @@
       {
         "name": "Blueberry",
         "price": 189,
-        "badge": "?",
+        "badge": "",
         "description": "Topped with blueberry sauce",
         "available": true
       },
@@ -214,8 +214,8 @@
         "name": "Classic Tiramisu",
         "price": 249,
         "section": "Tiramisu",
-        "portion": "250g | ?249",
-        "badge": "?",
+        "portion": "250g | ₹249",
+        "badge": "",
         "description": "Layers of espresso soaked biscuits, creamy mascarpone, and cocoa dusted to perfection",
         "available": true
       },
@@ -241,7 +241,7 @@
       {
         "name": "Chocolate Chips",
         "price": 79,
-        "badge": "?",
+        "badge": "",
         "description": "Topped and filled with milk chocolate",
         "available": true
       },
@@ -256,13 +256,13 @@
         "price": 99,
         "description": "Topped and filled with dark chocolate",
         "available": true
-        }
+      }
     ]
   },
   {
     "category": "DRINKS",
     "subtitle": "Soft Drinks",
-    "portion": "250ml | ?20",
+    "portion": "250ml | ₹20",
     "items": [
       {
         "name": "Coca-Cola",
@@ -293,7 +293,7 @@
         "name": "Heineken 0.0",
         "price": 150,
         "section": "Non Alcoholic Beverage",
-        "portion": "330ml | ?150",
+        "portion": "330ml | ₹150",
         "available": true
       },
       {
