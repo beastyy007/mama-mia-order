@@ -29,20 +29,72 @@ function saveMenu(menu) {
   fs.writeFileSync(menuFile, JSON.stringify(menu, null, 2));
 }
 
-function getOrders() {
-  if (!fs.existsSync(ordersFile)) {
-    return [];
+// Automatic Cloud Sync via jsonblob.com (Zero setup required by user)
+async function getBlobId(key, initialData) {
+  let config = {};
+  if (fs.existsSync(cloudConfigFile)) {
+    try { config = JSON.parse(fs.readFileSync(cloudConfigFile, 'utf8')); } catch(e){}
   }
+  if (config[key]) return config[key];
+
   try {
-    return JSON.parse(fs.readFileSync(ordersFile, 'utf8'));
+    const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(initialData)
+    });
+    const location = res.headers.get('location');
+    if (location) {
+      const blobId = location.split('/').pop();
+      config[key] = blobId;
+      fs.writeFileSync(cloudConfigFile, JSON.stringify(config, null, 2));
+      return blobId;
+    }
   } catch (e) {
-    console.error('Failed to parse orders.json', e);
-    return [];
+    console.error('Failed to create cloud blob for ' + key, e);
+  }
+  return null;
+}
+
+async function getCloudData(key, fallbackLocalFile) {
+  let localData = [];
+  if (fs.existsSync(fallbackLocalFile)) {
+    try { localData = JSON.parse(fs.readFileSync(fallbackLocalFile, 'utf8')); } catch(e){}
+  }
+
+  const blobId = await getBlobId(key, localData);
+  if (blobId) {
+    try {
+      const res = await fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`);
+      if (res.ok) {
+        const cloudData = await res.json();
+        return cloudData;
+      }
+    } catch(e) {
+      console.error('Failed to fetch from cloud blob ' + key, e);
+    }
+  }
+  return localData;
+}
+
+async function saveCloudData(key, data, fallbackLocalFile) {
+  fs.writeFileSync(fallbackLocalFile, JSON.stringify(data, null, 2));
+  const blobId = await getBlobId(key, data);
+  if (blobId) {
+    try {
+      await fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch(e) {
+      console.error('Failed to update cloud blob ' + key, e);
+    }
   }
 }
 
-function saveOrders(orders) {
-  fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
+async function getMenu() {
+  return await getCloudData('menu_blob_id', menuFile);
 }
 
 // Menu for customer ordering and admin management
@@ -61,18 +113,18 @@ app.put('/api/menu', (req, res) => {
 });
 
 // Get all orders (for Kitchen Display System)
-app.get('/api/orders', (req, res) => {
-  res.json(getOrders());
+app.get('/api/orders', async (req, res) => {
+  res.json(await getOrders());
 });
 
 // Create new order
-app.post('/order', (req, res) => {
+app.post('/order', async (req, res) => {
   const { table, items, total, customerName, customerPhone, notes } = req.body;
   if (!table || !items || items.length === 0) {
     return res.status(400).json({ status: 'error', message: 'Missing table or items' });
   }
 
-  const orders = getOrders();
+  const orders = await getOrders();
   const newOrder = {
     id: 'ORD-' + Date.now().toString().slice(-6),
     table,
@@ -86,17 +138,17 @@ app.post('/order', (req, res) => {
   };
 
   orders.unshift(newOrder); // newest first
-  saveOrders(orders);
+  await saveOrders(orders);
   console.log('New order received:', newOrder);
 
   res.json({ status: 'ok', order: newOrder });
 });
 
 // Update order status (KDS)
-app.patch('/api/orders/:id/status', (req, res) => {
+app.patch('/api/orders/:id/status', async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  const orders = getOrders();
+  const orders = await getOrders();
   const order = orders.find(o => o.id === id);
 
   if (!order) {
@@ -104,7 +156,7 @@ app.patch('/api/orders/:id/status', (req, res) => {
   }
 
   order.status = status;
-  saveOrders(orders);
+  await saveOrders(orders);
   res.json({ status: 'ok', order });
 });
 
