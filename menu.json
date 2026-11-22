@@ -241,7 +241,6 @@
       {
         "name": "Chocolate Chips",
         "price": 79,
-        "priceLabel": "?79 / ?249",
         "badge": "?",
         "description": "Topped and filled with milk chocolate",
         "available": true
@@ -249,14 +248,12 @@
       {
         "name": "Red Velvet",
         "price": 89,
-        "priceLabel": "?89 / ?269",
         "description": "Topped and filled with white chocolate",
         "available": true
       },
       {
         "name": "Double Chocolate",
         "price": 99,
-        "priceLabel": "?99 / ?279",
         "description": "Topped and filled with dark chocolate",
         "available": true
         }
