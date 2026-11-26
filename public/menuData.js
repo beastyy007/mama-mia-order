@@ -101,14 +101,14 @@ export const menuData = [
       },
       {
         "name": "Pesto Pizza",
-        "price": 419,
+        "price": 399,
         "badge": "",
         "description": "Pesto sauce, fresh mozzarella, cherry tomatoes, bell pepper, pesto drizzle, olive oil",
         "available": true
       },
       {
         "name": "Garden Harvest Pizza",
-        "price": 419,
+        "price": 399,
         "description": "Pizza sauce, fresh mozzarella, onions, bell pepper, olives, tomatoes, olive oil",
         "available": true
       },
@@ -120,7 +120,7 @@ export const menuData = [
       },
       {
         "name": "Roasted Veggies Pesto Pizza",
-        "price": 439,
+        "price": 399,
         "description": "Pesto sauce, zucchini, bell peppers, roasted corn, olive, fresh mozzarella",
         "available": true
       },
@@ -155,13 +155,13 @@ export const menuData = [
       {
         "name": "Classic Garlic Bread",
         "price": 189,
-        "badge": "Four Pieces",
+      
         "description": "Slow roasted garlic paste, fresh mozzarella, oregano, Parmesan",
         "available": true
       },
       {
         "name": "Tandoori Paneer",
-        "price": 189,
+        "price": 209,
         "description": "Garlic butter, tandoori paneer, fresh mozzarella",
         "available": true
       },
@@ -190,12 +190,7 @@ export const menuData = [
         "description": "Spicy peri peri garlic knots",
         "available": true
       },
-      {
-        "name": "Tandoori Panner",
-        "price": 209,
-        "description": "Garlic butter, tandoori panner, fresh mozzarella",
-        "available": true
-      }
+      
     ]
   },
   {
@@ -251,7 +246,7 @@ export const menuData = [
       },
       {
         "name": "Strawberry Tiramisu",
-        "price": 259,
+        "price": 279,
         "description": "A refreshing twist on the Italian classic with fresh strawberries, silky macaroons, and delicate berry layers",
         "available": true
       }
@@ -300,11 +295,17 @@ export const menuData = [
     "subtitle": "Soft Drinks",
     "portion": "250ml | â‚¹20",
     "items": [
+       {
+        "name": "Water Bottle",
+        "price": 10,
+        "available": true
+      },
       {
         "name": "Coca-Cola",
         "price": 20,
         "available": true
       },
+      
       {
         "name": "Diet Coke",
         "price": 50,
