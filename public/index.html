@@ -116,6 +116,84 @@
 
     <script type="module" src="menuData.js"></script>
     <script type="module" src="app.js"></script>
+
+    <!-- Call Waiter Floating Button -->
+    <div class="fixed bottom-20 right-4 z-40">
+        <button onclick="openCallModal()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold p-3.5 rounded-full shadow-2xl flex items-center justify-center transition border-2 border-stone-900 group" title="Call Waiter">
+            <i class="fa-solid fa-bell text-xl animate-bounce"></i>
+            <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-semibold px-0 group-hover:px-2">Call Waiter</span>
+        </button>
+    </div>
+
+    <!-- Call Waiter Modal -->
+    <div id="call-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-stone-200 text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-serif">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3 class="text-xl font-bold font-serif text-stone-900 mb-1">Call Waiter to Table</h3>
+            <p class="text-xs text-stone-500 mb-4">Select the reason for calling assistance to <span id="call-modal-table" class="font-bold text-amber-700">Table --</span>.</p>
+            
+            <div class="grid grid-cols-2 gap-2.5 mb-5">
+                <button onclick="submitCall('Water')" class="p-3 bg-stone-50 hover:bg-amber-50 border border-stone-200 hover:border-amber-400 rounded-xl text-xs font-semibold text-stone-800 transition flex flex-col items-center gap-1.5">
+                    <i class="fa-solid fa-glass-water text-base text-amber-600"></i>
+                    <span>Water</span>
+                </button>
+                <button onclick="submitCall('Bill')" class="p-3 bg-stone-50 hover:bg-amber-50 border border-stone-200 hover:border-amber-400 rounded-xl text-xs font-semibold text-stone-800 transition flex flex-col items-center gap-1.5">
+                    <i class="fa-solid fa-file-invoice-dollar text-base text-amber-600"></i>
+                    <span>Bill / Checkout</span>
+                </button>
+                <button onclick="submitCall('Cutlery')" class="p-3 bg-stone-50 hover:bg-amber-50 border border-stone-200 hover:border-amber-400 rounded-xl text-xs font-semibold text-stone-800 transition flex flex-col items-center gap-1.5">
+                    <i class="fa-solid fa-utensils text-base text-amber-600"></i>
+                    <span>Cutlery / Napkins</span>
+                </button>
+                <button onclick="submitCall('General Assistance')" class="p-3 bg-stone-50 hover:bg-amber-50 border border-stone-200 hover:border-amber-400 rounded-xl text-xs font-semibold text-stone-800 transition flex flex-col items-center gap-1.5">
+                    <i class="fa-solid fa-user-tie text-base text-amber-600"></i>
+                    <span>Waiter / General</span>
+                </button>
+            </div>
+
+            <button onclick="closeCallModal()" class="w-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold py-2.5 rounded-xl text-xs transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        window.openCallModal = function () {
+            const tbl = localStorage.getItem('m_tbl');
+            if (!tbl) {
+                alert('Please select your table first!');
+                window.openTbl && window.openTbl();
+                return;
+            }
+            document.getElementById('call-modal-table').textContent = tbl.toLowerCase().includes('pickup') ? tbl : 'Table #' + tbl;
+            document.getElementById('call-modal').classList.remove('hidden');
+        }
+        window.closeCallModal = function () {
+            document.getElementById('call-modal').classList.add('hidden');
+        };
+        window.submitCall = async function (reason) {
+            const tbl = localStorage.getItem('m_tbl');
+            if (!tbl) { alert('Table not selected'); return; }
+            try {
+                const res = await fetch('/api/calls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ table: tbl, reason })
+                });
+                if (res.ok) {
+                    closeCallModal();
+                    alert('Waiter called for ' + (tbl.toLowerCase().includes('pickup') ? tbl : 'Table #' + tbl) + ' (' + reason + ')! Kitchen & staff notified.');
+                } else {
+                    alert('Failed to call waiter. Please try again.');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network error calling waiter.');
+            }
+        }
+    </script>
 </body>
 </html>
     <!-- Full Cart Drawer Modal -->
