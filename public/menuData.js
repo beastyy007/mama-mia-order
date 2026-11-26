@@ -2,7 +2,7 @@ export const menuData = [
   {
     "category": "PASTA",
     "subtitle": "Fettuccine Pasta",
-    "portion": "250g | â‚¹229",
+    "portion": "250g | ₹229",
     "items": [
       {
         "name": "Creamy Mushroom Alfredo",
@@ -34,7 +34,7 @@ export const menuData = [
         "name": "Spinach & Cheese Ravioli",
         "price": 259,
         "section": "Ravioli Pasta",
-        "portion": "250g [10P] | â‚¹259",
+        "portion": "250g [10P] | ₹259",
         "badge": "",
         "description": "White sauce, garlic sauce",
         "available": true
@@ -46,7 +46,7 @@ export const menuData = [
         "available": true
       },
       {
-        "name": "Cheese Corn JalapeÃ±os",
+        "name": "Cheese Corn Jalapeños",
         "price": 259,
         "description": "Pink sauce, garlic sauce",
         "available": true
@@ -67,7 +67,7 @@ export const menuData = [
         "name": "Pesto Gnocchi",
         "price": 259,
         "section": "Gnocchi Pasta",
-        "portion": "250g | â‚¹259",
+        "portion": "250g | ₹259",
         "description": "Cherry tomatoes, zucchini, Parmesan cheese, pesto sauce",
         "available": true
       },
@@ -82,12 +82,12 @@ export const menuData = [
   {
     "category": "PIZZA",
     "subtitle": "Make Your Own",
-    "portion": "Size : 10\" | â‚¹369",
+    "portion": "Size : 10\" | ₹369",
     "items": [
       {
         "name": "Make Your Own Pizza",
         "price": 369,
-        "description": "Choose your crust: Classic Italian, Flour, Multigrain Wellness. Pick your sauce: Pizza, Pesto, Garlic, Angry. Toppings: any five, extra â‚¹30 each. Drizzle: any one.",
+        "description": "Choose your crust: Classic Italian, Flour, Multigrain Wellness. Pick your sauce: Pizza, Pesto, Garlic, Angry. Toppings: any five, extra ₹30 each. Drizzle: any one.",
         "badge": "Any One",
         "available": true
       },
@@ -95,7 +95,7 @@ export const menuData = [
         "name": "Margherita Pizza",
         "price": 399,
         "section": "Classic Italian",
-        "portion": "Size : 10\" | â‚¹399",
+        "portion": "Size : 10\" | ₹399",
         "description": "Pizza sauce, fresh mozzarella, fresh basil leaves, olive oil",
         "available": true
       },
@@ -128,8 +128,8 @@ export const menuData = [
         "name": "Spicy Paneer Arrabbiata",
         "price": 449,
         "section": "Indo Fusion Pizza",
-        "portion": "Size : 10\" | â‚¹449",
-        "description": "Angry sauce, peri peri paneer, onion, jalapeÃ±os, bell pepper, fresh mozzarella, chilli oil drizzle",
+        "portion": "Size : 10\" | ₹449",
+        "description": "Angry sauce, peri peri paneer, onion, jalapeños, bell pepper, fresh mozzarella, chilli oil drizzle",
         "available": true
       },
       {
@@ -155,7 +155,6 @@ export const menuData = [
       {
         "name": "Classic Garlic Bread",
         "price": 189,
-      
         "description": "Slow roasted garlic paste, fresh mozzarella, oregano, Parmesan",
         "available": true
       },
@@ -189,14 +188,13 @@ export const menuData = [
         "price": 209,
         "description": "Spicy peri peri garlic knots",
         "available": true
-      },
-      
+      }
     ]
   },
   {
     "category": "DESSERT",
     "subtitle": "Cheesecake",
-    "portion": "180/500g | â‚¹189/699",
+    "portion": "180/500g | ₹189/699",
     "items": [
       {
         "name": "New York Style",
@@ -233,7 +231,7 @@ export const menuData = [
         "name": "Classic Tiramisu",
         "price": 249,
         "section": "Tiramisu",
-        "portion": "250g | â‚¹249",
+        "portion": "250g | ₹249",
         "badge": "",
         "description": "Layers of espresso soaked biscuits, creamy mascarpone, and cocoa dusted to perfection",
         "available": true
@@ -293,9 +291,9 @@ export const menuData = [
   {
     "category": "DRINKS",
     "subtitle": "Soft Drinks",
-    "portion": "250ml | â‚¹20",
+    "portion": "250ml | ₹20",
     "items": [
-       {
+      {
         "name": "Water Bottle",
         "price": 10,
         "available": true
@@ -305,7 +303,6 @@ export const menuData = [
         "price": 20,
         "available": true
       },
-      
       {
         "name": "Diet Coke",
         "price": 50,
@@ -330,7 +327,7 @@ export const menuData = [
         "name": "Heineken 0.0",
         "price": 150,
         "section": "Non Alcoholic Beverage",
-        "portion": "330ml | â‚¹150",
+        "portion": "330ml | ₹150",
         "available": true
       },
       {
@@ -345,5 +342,4 @@ export const menuData = [
       }
     ]
   }
-]
-;
+];
