@@ -31,6 +31,7 @@ function updTbl(){
   }
 }
 window.openTbl=()=>document.getElementById('table-modal')?.classList.remove('hidden');
+window.openTableModal=window.openTbl;
 window.closeTbl=()=>{if(!t){alert('Select table!');return;}document.getElementById('table-modal')?.classList.add('hidden');}
 function renTabs(){
 const catContainer=document.getElementById('category-tabs');if(!catContainer)return;
