@@ -23,6 +23,21 @@
     </div>
 
     <div id="kds-app" class="hidden">
+    <!-- Table Calls Banner -->
+    <div id="table-calls-banner" class="hidden mb-4 bg-amber-500/20 border border-amber-500/60 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-lg animate-pulse">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-amber-400 text-sm">Table Call Alerts</h3>
+                <p id="table-calls-text" class="text-xs text-stone-300">Active table assistance requests</p>
+            </div>
+        </div>
+        <div id="table-calls-list" class="flex flex-wrap gap-2">
+            <!-- Dynamic call chips -->
+        </div>
+    </div>
     <header class="mb-5 border-b border-stone-800 pb-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -73,9 +88,51 @@
             document.getElementById('kds-login').classList.add('hidden');
             document.getElementById('kds-app').classList.remove('hidden');
             fetchOrders();
+            fetchCalls();
             loadMenuAndPopulateItems();
             setInterval(fetchOrders, 60000);
+            setInterval(fetchCalls, 10000);
             setInterval(updateTimers, 1000);
+        }
+
+        let activeCalls = [];
+        async function fetchCalls() {
+            try {
+                const res = await fetch('/api/calls', { cache: 'no-store' });
+                if (!res.ok) return;
+                activeCalls = await res.json();
+                renderCallsBanner();
+            } catch (e) {
+                console.error('Failed to fetch calls', e);
+            }
+        }
+        function renderCallsBanner() {
+            const banner = document.getElementById('table-calls-banner');
+            const listContainer = document.getElementById('table-calls-list');
+            const textEl = document.getElementById('table-calls-text');
+            if (!activeCalls || activeCalls.length === 0) {
+                banner.classList.add('hidden');
+                return;
+            }
+            banner.classList.remove('hidden');
+            textEl.textContent = `${activeCalls.length} table call(s) pending attention`;
+            listContainer.innerHTML = activeCalls.map(c => `
+                <div class="bg-stone-900 border border-amber-500/80 rounded-xl px-3 py-2 flex items-center gap-3 shadow">
+                    <div>
+                        <p class="text-xs font-bold text-amber-400">${String(c.table).toLowerCase().includes('pickup') ? c.table : 'Table #' + c.table} <span class="text-[10px] text-stone-400">(${c.timestamp})</span></p>
+                        <p class="text-xs text-stone-200"><i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i>${safe(c.reason)}</p>
+                    </div>
+                    <button onclick="resolveCall('${safe(c.id)}')" class="bg-amber-600 hover:bg-amber-500 text-stone-950 px-2.5 py-1 rounded-lg text-xs font-bold transition">Resolve</button>
+                </div>
+            `).join('');
+        }
+        async function resolveCall(id) {
+            try {
+                await fetch(`/api/calls/${id}`, { method: 'DELETE' });
+                fetchCalls();
+            } catch(e) {
+                console.error('Failed to resolve call', e);
+            }
         }
 
         function setConnection(ok) {
@@ -251,7 +308,6 @@
             billWindow.document.write(`<!doctype html><html><head><title>E-bill ${safe(order.id)}</title><style>body{font-family:Arial,sans-serif;color:#222;max-width:760px;margin:32px auto;padding:0 24px}h1{margin:0;color:#b45309;font-size:28px}.muted{color:#666;font-size:13px}.header{display:flex;justify-content:space-between;border-bottom:2px solid #b45309;padding-bottom:16px}.details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0;font-size:14px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{padding:10px 8px;border-bottom:1px solid #ddd;text-align:left}th{background:#fef3c7}.number{text-align:right}.summary{text-align:right;margin-top:20px;line-height:1.8}.total{font-size:20px;font-weight:bold;text-align:right;margin-top:8px;border-top:2px solid #222;padding-top:12px}.thanks{text-align:center;margin-top:48px;color:#666}@media print{body{margin:0 auto}.no-print{display:none}}</style></head><body><div class="header"><div><h1>Mama Mia Artisan Kitchen</h1><div class="muted">E-bill / Payment Receipt</div></div><div style="text-align:right"><b>${safe(order.id)}</b><br><span class="muted">${safe(new Date().toLocaleString('en-IN'))}</span></div></div><div class="details"><div><b>Customer:</b> ${safe(order.customerName || 'Guest')}</div><div><b>Table:</b> ${safe(order.table)}</div><div><b>Phone:</b> ${safe(order.customerPhone || '-')}</div><div><b>Status:</b> Completed</div></div><table><thead><tr><th>Item</th><th class="number">Qty</th><th class="number">Price</th><th class="number">Amount</th></tr></thead><tbody>${itemRows}</tbody></table><div class="summary"><div>Subtotal: ₹${subtotal.toFixed(2)}</div><div>GST (${gstRate}%): ₹${gstAmount.toFixed(2)}</div></div><div class="total">Grand Total: ₹${billTotal.toFixed(2)}</div><p class="thanks">Thank you for dining with us!</p><button class="no-print" onclick="window.print()">Print / Save as PDF</button><script>window.onload=()=>setTimeout(()=>window.print(),300);<\/script></body></html>`);
             billWindow.document.close();
         }
-
         async function notifyReady(id) {
             const order = currentOrders.find(item => item.id === id);
             if (!order) return;
